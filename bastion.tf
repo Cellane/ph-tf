@@ -2,6 +2,7 @@ resource "aws_default_vpc" "default_vpc" {
 }
 
 resource "aws_security_group" "bastion_sg" {
+  name   = "bastion"
   vpc_id = "${aws_default_vpc.default_vpc.id}"
 
   ingress {
@@ -35,4 +36,8 @@ resource "aws_instance" "bastion_instance" {
   instance_type          = "t2.micro"
   key_name               = "DevStgBastion"
   vpc_security_group_ids = ["${aws_security_group.bastion_sg.id}"]
+
+  tags {
+    Name = "bastion"
+  }
 }

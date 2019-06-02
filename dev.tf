@@ -14,6 +14,7 @@ resource "aws_subnet" "dev_subnet_private" {
 }
 
 resource "aws_security_group" "dev_sg_db_private" {
+  name   = "dev-db-private"
   vpc_id = "${aws_vpc.dev_vpc.id}"
 
   ingress {
@@ -25,6 +26,7 @@ resource "aws_security_group" "dev_sg_db_private" {
 }
 
 resource "aws_security_group" "dev_sg_backend_public" {
+  name   = "dev-backend-public"
   vpc_id = "${aws_vpc.dev_vpc.id}"
 
   ingress {
@@ -35,20 +37,6 @@ resource "aws_security_group" "dev_sg_backend_public" {
   }
 
   ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
@@ -61,12 +49,20 @@ resource "aws_instance" "dev_instance_db" {
   instance_type          = "t2.small"
   vpc_security_group_ids = ["${aws_security_group.dev_sg_db_private.id}"]
   subnet_id              = "${aws_subnet.dev_subnet_private.id}"
+
+  tags {
+    Name = "dev-db"
+  }
 }
 
 resource "aws_instance" "dev_instance_backend" {
   ami           = "${data.aws_ami.ubuntu.id}"
   instance_type = "t2.small"
   subnet_id     = "${aws_subnet.dev_subnet_public.id}"
+
+  tags {
+    Name = "dev-backend"
+  }
 }
 
 resource "aws_eip" "dev_eip_backend" {

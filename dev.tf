@@ -18,6 +18,7 @@ resource "aws_security_group" "dev_sg_db_private" {
   vpc_id = "${aws_vpc.dev_vpc.id}"
 
   ingress {
+    description     = "MySQL to bastion"
     from_port       = 3306
     to_port         = 3306
     protocol        = "tcp"
@@ -30,6 +31,7 @@ resource "aws_security_group" "dev_sg_backend_public" {
   vpc_id = "${aws_vpc.dev_vpc.id}"
 
   ingress {
+    description = "HTTP to external world"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
@@ -37,6 +39,7 @@ resource "aws_security_group" "dev_sg_backend_public" {
   }
 
   ingress {
+    description = "HTTPS to external world"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
@@ -45,22 +48,23 @@ resource "aws_security_group" "dev_sg_backend_public" {
 }
 
 resource "aws_instance" "dev_instance_db" {
-  ami                    = "${data.aws_ami.ubuntu.id}"
+  ami                    = "ami-01a74235d69740cfa"
   instance_type          = "t2.small"
   vpc_security_group_ids = ["${aws_security_group.dev_sg_db_private.id}"]
   subnet_id              = "${aws_subnet.dev_subnet_private.id}"
 
-  tags {
+  tags = {
     Name = "dev-db"
   }
 }
 
 resource "aws_instance" "dev_instance_backend" {
-  ami           = "${data.aws_ami.ubuntu.id}"
-  instance_type = "t2.small"
-  subnet_id     = "${aws_subnet.dev_subnet_public.id}"
+  ami                    = "ami-091830e484c3984fa"
+  instance_type          = "t2.small"
+  vpc_security_group_ids = ["${aws_security_group.dev_sg_backend_public.id}"]
+  subnet_id              = "${aws_subnet.dev_subnet_public.id}"
 
-  tags {
+  tags = {
     Name = "dev-backend"
   }
 }

@@ -1,9 +1,26 @@
-resource "aws_default_vpc" "default" {
+######
+### VPCS
+######
+
+data "aws_vpc" "default" {
+  default = true
 }
+
+######
+### ROUTE TABLES
+######
+
+data "aws_route_table" "default" {
+  vpc_id = "${data.aws_vpc.default.id}"
+}
+
+######
+### SECURITY GROUPS
+######
 
 resource "aws_security_group" "bastion_sg" {
   name   = "bastion"
-  vpc_id = "${aws_default_vpc.default.id}"
+  vpc_id = "${data.aws_vpc.default.id}"
 
   ingress {
     description = "SSH from allowed IP addresses"
@@ -11,10 +28,19 @@ resource "aws_security_group" "bastion_sg" {
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = [
-      "103.208.220.0/24" # VPN
+      "103.208.220.0/24",  # VPN
+      "209.146.25.246/32", # PH
     ]
   }
+
+  tags = {
+    Name = "bastion-sg"
+  }
 }
+
+######
+### SECURITY GROUP RULES
+######
 
 resource "aws_security_group_rule" "bastion_sg_rule_dev_db_ssh" {
   description              = "SSH to dev DB"
@@ -36,6 +62,10 @@ resource "aws_security_group_rule" "bastion_sg_rule_dev_dev_mysql" {
   source_security_group_id = "${aws_security_group.dev_sg_db_private.id}"
 }
 
+######
+### INSTANCES
+######
+
 resource "aws_instance" "bastion_instance" {
   ami                    = "${data.aws_ami.ubuntu.id}"
   instance_type          = "t2.micro"
@@ -46,3 +76,25 @@ resource "aws_instance" "bastion_instance" {
     Name = "bastion"
   }
 }
+
+######
+### ELASTIC IPS
+######
+
+resource "aws_eip" "bastion_eip" {
+  instance = "${aws_instance.bastion_instance.id}"
+
+  tags = {
+    Name = "bastion-ip"
+  }
+}
+
+######
+### OUTPUTS
+######
+
+output "bastion_public_ip" {
+  value = "${aws_eip.bastion_eip.public_ip}"
+}
+
+

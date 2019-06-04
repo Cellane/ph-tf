@@ -10,7 +10,6 @@ variable "bastion_security_group_id" {
   description = "Security group in which bastion server is located"
 }
 
-
 variable "ami_backend" {
   description = "AMI to use for backend instance"
 }

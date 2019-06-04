@@ -180,6 +180,14 @@ resource "aws_security_group" "dev_sg_backend_public" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    description     = "SSH from bastion"
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    security_groups = ["${aws_security_group.bastion_sg.id}"]
+  }
+
   tags = {
     Name = "dev-backend-public-sg"
   }
@@ -245,6 +253,10 @@ resource "aws_eip" "dev_eip_backend" {
 
 output "dev_db_private_ip" {
   value = "${aws_instance.dev_instance_db.private_ip}"
+}
+
+output "dev_backend_private_ip" {
+  value = "${aws_instance.dev_instance_backend.private_ip}"
 }
 
 output "dev_backend_public_ip" {

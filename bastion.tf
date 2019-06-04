@@ -52,7 +52,7 @@ resource "aws_security_group_rule" "bastion_sg_rule_dev_db_ssh" {
   source_security_group_id = "${aws_security_group.dev_sg_db_private.id}"
 }
 
-resource "aws_security_group_rule" "bastion_sg_rule_dev_dev_mysql" {
+resource "aws_security_group_rule" "bastion_sg_rule_dev_db_mysql" {
   description              = "MySQL to dev DB"
   security_group_id        = "${aws_security_group.bastion_sg.id}"
   from_port                = 3306
@@ -60,6 +60,16 @@ resource "aws_security_group_rule" "bastion_sg_rule_dev_dev_mysql" {
   protocol                 = "tcp"
   type                     = "egress"
   source_security_group_id = "${aws_security_group.dev_sg_db_private.id}"
+}
+
+resource "aws_security_group_rule" "bastion_sg_rule_dev_backend_ssh" {
+  description              = "SSH to dev backend"
+  security_group_id        = "${aws_security_group.bastion_sg.id}"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  type                     = "egress"
+  source_security_group_id = "${aws_security_group.dev_sg_backend_public.id}"
 }
 
 ######
@@ -96,5 +106,3 @@ resource "aws_eip" "bastion_eip" {
 output "bastion_public_ip" {
   value = "${aws_eip.bastion_eip.public_ip}"
 }
-
-

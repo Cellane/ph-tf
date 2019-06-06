@@ -9,3 +9,15 @@ output "dev_backend_private_ip" {
 output "dev_backend_public_ip" {
   value = "${module.dev.backend_public_ip}"
 }
+
+output "stg_db_private_ip" {
+  value = "${module.stg.db_private_ip}"
+}
+
+output "stg_backend_private_ip" {
+  value = "${module.stg.backend_private_ip}"
+}
+
+output "stg_backend_public_ip" {
+  value = "${module.stg.backend_public_ip}"
+}

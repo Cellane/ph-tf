@@ -219,6 +219,16 @@ resource "aws_security_group_rule" "backend_mysql_to_db" {
   source_security_group_id = "${aws_security_group.db_private.id}"
 }
 
+resource "aws_security_group_rule" "backend_to_outside" {
+  description       = "All traffic from backend to outside"
+  security_group_id = "${aws_security_group.backend_public.id}"
+  from_port         = 0
+  to_port           = 65535
+  protocol          = "all"
+  type              = "egress"
+  cidr_blocks       = ["0.0.0.0/0"]
+}
+
 resource "aws_security_group_rule" "bastion_ssh_to_db" {
   description              = "SSH to ${var.environment_name} DB"
   security_group_id        = "${var.bastion_security_group_id}"

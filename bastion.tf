@@ -43,7 +43,7 @@ resource "aws_security_group" "bastion_sg" {
 ######
 
 resource "aws_instance" "bastion_instance" {
-  ami                    = "${data.aws_ami.ubuntu.id}"
+  ami                    = "ami-06d9ad3f86032262d"
   instance_type          = "t2.micro"
   key_name               = "DevStgBastion"
   vpc_security_group_ids = ["${aws_security_group.bastion_sg.id}"]

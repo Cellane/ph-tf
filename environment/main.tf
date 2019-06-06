@@ -185,6 +185,14 @@ resource "aws_security_group" "backend_public" {
   }
 
   ingress {
+    description = "HTTP to external world (8080)"
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
     description     = "SSH from bastion"
     from_port       = 22
     to_port         = 22
@@ -281,20 +289,4 @@ resource "aws_eip" "eip_backend" {
   tags = {
     Name = "${var.environment_name}-backend-ip"
   }
-}
-
-######
-### OUTPUTS
-######
-
-output "db_private_ip" {
-  value = "${aws_instance.instance_db.private_ip}"
-}
-
-output "backend_private_ip" {
-  value = "${aws_instance.instance_backend.private_ip}"
-}
-
-output "backend_public_ip" {
-  value = "${aws_eip.eip_backend.public_ip}"
 }
